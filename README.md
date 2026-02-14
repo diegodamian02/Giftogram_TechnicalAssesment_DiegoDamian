@@ -1,8 +1,8 @@
-# Giftogram Technical Assessment — Chat API
+# Giftogram Technical Assessment — Rest API
 
 **Author:** Diego Damian  
 **Start Time:** Friday, February 13, 2026 — 10:00 PM ET  
-**Total Time:** (To be calculated upon completion)
+**Total Time:**  pause taken at 12:50 AM (To be calculated upon completion) - 3 hours
 
 ---
 
