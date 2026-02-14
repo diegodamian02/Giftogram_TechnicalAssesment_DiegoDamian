@@ -8,13 +8,15 @@ const app = express();
 app.use(express.json());
 
 app.get("/health", async (req, res) => {
-    try{
-        await pool.query("SELECT 1");
-        res.json({ ok: true, db: "connected"});
-    } catch(err) {
-        res.status(500).json({ ok: false, db: "disconnected", error: err.message });
-    }
+  try {
+    await pool.query("SELECT 1");
+    res.json({ ok: true, db: "connected" });
+  } catch (err) {
+    res.status(500).json({ ok: false, db: "disconnected" });
+  }
 });
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`API running on port ${PORT}`));

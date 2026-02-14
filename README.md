@@ -1,4 +1,4 @@
-# Giftogram Technical Assessment — Chat API
+# Giftogram Technical Assessment — REST API
 
 **Author:** Diego Damian  
 **Start Time:** Friday, February 13, 2026 — 10:00 PM ET  
@@ -51,7 +51,7 @@ This project is developed incrementally with clear commits to demonstrate progre
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/diegodamian02/Giftogram_TechnicalAssesment_DiegoDamian.git
 cd giftogram-chat-api
 ```
 
