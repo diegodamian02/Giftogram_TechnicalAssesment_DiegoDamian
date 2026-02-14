@@ -1,13 +1,21 @@
-// Initial commit to see if packages are workingh correctly
-const express = require("express")
+// Testing database connectivity if it works, initial set up for the app
+require("dotenv").config();
 
-const app = express()
-app.use(express.json)
+const express = require("express");
+const { pool } = require("./db");
 
-app.get("/health", (req, res) => {
-    res.json({ ok: true});
+const app = express();
+app.use(express.json());
+
+app.get("/health", async (req, res) => {
+    try{
+        await pool.query("SELECT 1");
+        res.json({ ok: true, db: "connected"});
+    } catch(err) {
+        res.status(500).json({ ok: false, db: "disconnected", error: err.message });
+    }
 });
 
-
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`API running on port ${PORT}`))
+app.listen(PORT, () => console.log(`API running on port ${PORT}`));
+
