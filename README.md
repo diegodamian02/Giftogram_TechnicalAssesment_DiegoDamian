@@ -13,10 +13,10 @@ This project implements a backend REST API for a chat application using Node.js 
 The API supports:
 
 - User registration
-- User login (to be implemented)
-- Sending messages between users (to be implemented)
-- Viewing message history between two users (to be implemented)
-- Listing all users excluding the requester (to be implemented)
+- User login
+- Sending messages between users
+- Viewing message history between two users
+- Listing all users excluding the requester
 
 All endpoints return JSON responses.
 
@@ -31,6 +31,92 @@ Error responses follow this structure:
 ```
 
 The project is developed incrementally using small, traceable commits to demonstrate architectural decisions and implementation progress.
+
+---
+
+## API Status
+
+- `POST /register` implemented
+- `POST /login` implemented
+- `GET /view_messages` implemented
+- `POST /send_message` implemented
+- `GET /list_all_users` pending
+
+All error responses follow:
+
+```json
+{
+  "error_code": 101,
+  "error_title": "Login Failure",
+  "error_message": "Email or Password was Invalid!"
+}
+```
+
+---
+
+## Endpoint Contract (Assessment)
+
+### POST `/register`
+Body:
+```json
+{ "email": "info@giftogram.com", "password": "Test123", "first_name": "John", "last_name": "Doe" }
+```
+Response:
+```json
+{ "user_id": 1, "email": "info@giftogram.com", "first_name": "John", "last_name": "Doe" }
+```
+
+### POST `/login`
+Body:
+```json
+{ "email": "info@giftogram.com", "password": "Test123" }
+```
+Response:
+```json
+{ "user_id": 1, "email": "info@giftogram.com", "first_name": "John", "last_name": "Doe" }
+```
+
+### GET `/view_messages`
+Query:
+```text
+/view_messages?user_id_a=1&user_id_b=2
+```
+Response:
+```json
+{
+  "messages": [
+    { "message_id": 1, "sender_user_id": 1, "message": "Hey", "epoch": 1429220026 }
+  ]
+}
+```
+
+### POST `/send_message`
+Body:
+```json
+{ "sender_user_id": 1, "receiver_user_id": 2, "message": "Example text" }
+```
+Response:
+```json
+{
+  "success_code": 200,
+  "success_title": "Message Sent",
+  "success_message": "Message was sent successfully"
+}
+```
+
+### GET `/list_all_users`
+Query:
+```text
+/list_all_users?requester_user_id=3
+```
+Response:
+```json
+{
+  "users": [
+    { "user_id": 1, "email": "ppeck@giftogram.com", "first_name": "Preston", "last_name": "Peck" }
+  ]
+}
+```
 
 ---
 
@@ -207,6 +293,15 @@ Note: Including database dumps is not recommended in production systems but is i
 - Returned `user_id` on successful authentication
 - Maintained standardized error response format
 
+---
+
+### Commit #5 — Messaging Endpoints (Partial)
+
+- Added `POST /send_message`
+- Added `GET /view_messages`
+- Added input validation and standardized error responses for messaging flows
+- Added message history query logic (both directions, chronological order)
+- `GET /list_all_users` remains pending
 
 ---
 
