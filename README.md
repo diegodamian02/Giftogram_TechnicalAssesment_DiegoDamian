@@ -199,6 +199,17 @@ Note: Including database dumps is not recommended in production systems but is i
 
 ---
 
+### Commit #4 — Login Endpoint Implementation
+
+- Implemented `POST /login`
+- Validated credentials using bcrypt password comparison
+- Prevented email enumeration via generic failure response
+- Returned `user_id` on successful authentication
+- Maintained standardized error response format
+
+
+---
+
 ## Suggested Improvements
 
 While the assignment focuses on functional requirements, the following improvements increase production readiness.

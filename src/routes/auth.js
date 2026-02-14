@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const { pool } = require("../db")
 const { sendError } = require("../utils/errors");
+const send = require("send");
 const router = express.Router();
 
 /**
@@ -64,5 +65,63 @@ router.post("/register", async (req, res) => {
         });
     }
 });
+
+/**
+ * POST /login
+ * Body: { email, password }
+ * Response: { user_id }
+ */
+
+router.post("/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if(!email || !password ) {
+            return sendError(res, {
+                status: 400,
+                code: 100,
+                title: "Validation Error",
+                message: "email and password are required."
+            });
+        }
+        const [rows] = await pool.query(
+            "SELECT id, password_hash FROM users WHERE email = ? LIMIT 1",
+            [email]
+        );
+
+        if(rows.length === 0) {
+            return sendError(res, {
+                status: 401,
+                code: 101,
+                title: "Loign Failure",
+                message: "Invalid email or password.",
+            });
+        }
+
+        const user = rows[0];
+        const ok = await bcrypt.compare(password, user.password_hash);
+
+        if(!ok) {
+            return sendError(res, {
+                status: 401, 
+                code: 101,
+                title: "Login Failure",
+                message: "Invalid email or password."
+            });
+        }
+
+        return res.status(200).json({ user_id: user.user_id});
+    } catch(err) {
+        console.error("Login error:", err);
+        return sendError(res, {
+            status: 500,
+            code: 500,
+            title: "Server Error",
+            message: "An unexpectede error occurred."
+        });
+    }
+});
+
+
 
 module.exports = router;
