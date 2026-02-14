@@ -1,4 +1,4 @@
-# Giftogram Technical Assessment — REST API
+# Giftogram Technical Assessment — Chat API
 
 **Author:** Diego Damian  
 **Start Time:** Friday, February 13, 2026 — 10:00 PM ET  
@@ -8,23 +8,29 @@
 
 ## Overview
 
-This project implements a backend REST API for a chat application using **Node.js (Express)** and **MySQL**.
+This project implements a backend REST API for a chat application using Node.js (Express) and MySQL.
 
 The API supports:
 
 - User registration
-- User login
-- Sending messages between users
-- Viewing message history between two users
-- Listing all users excluding the requester
+- User login (to be implemented)
+- Sending messages between users (to be implemented)
+- Viewing message history between two users (to be implemented)
+- Listing all users excluding the requester (to be implemented)
 
-All endpoints return JSON responses. Error responses follow the required structure:
+All endpoints return JSON responses.
 
-- `error_code`
-- `error_title`
-- `error_message`
+Error responses follow this structure:
 
-This project is developed incrementally with clear commits to demonstrate progress and architectural decisions.
+```json
+{
+  "error_code": number,
+  "error_title": string,
+  "error_message": string
+}
+```
+
+The project is developed incrementally using small, traceable commits to demonstrate architectural decisions and implementation progress.
 
 ---
 
@@ -33,9 +39,9 @@ This project is developed incrementally with clear commits to demonstrate progre
 - Node.js
 - Express.js
 - MySQL
-- `mysql2` (connection pooling)
-- `dotenv` (environment configuration)
-- `bcryptjs` (planned for password hashing)
+- mysql2 (connection pooling)
+- dotenv (environment configuration)
+- bcryptjs (password hashing)
 
 ---
 
@@ -51,31 +57,35 @@ This project is developed incrementally with clear commits to demonstrate progre
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/diegodamian02/Giftogram_TechnicalAssesment_DiegoDamian.git
+git clone <repository-url>
 cd giftogram-chat-api
 ```
 
 ### 2. Install Dependencies
 
-All required Node packages (Express, mysql2, dotenv, bcryptjs) are installed via:
-
 ```bash
 npm install
 ```
 
+Installs:
+- express
+- mysql2
+- dotenv
+- bcryptjs
+
 ### 3. Configure Environment Variables
 
-Create a `.env` file from the template:
+Create a `.env` file from the example template:
 
 ```bash
 cp .env.example .env
 ```
 
-Update database credentials in `.env`:
+Update database credentials:
 
 ```env
 PORT=3000
-DB_HOST=localhost
+DB_HOST=127.0.0.1
 DB_USER=root
 DB_PASSWORD=yourpassword
 DB_NAME=giftogram_chat
@@ -94,103 +104,127 @@ mysql -u root -p < sql/schema.sql
 npm start
 ```
 
-Test the health endpoint:
+Test:
 
 ```
 GET http://localhost:3000/health
 ```
 
-Expected response:
+Expected:
 
 ```json
-{ "ok": true, "db": "connected" }
+{
+  "ok": true,
+  "db": "connected"
+}
 ```
 
 ---
 
 ## Database Schema
 
-The schema design includes:
+### users
+- id (Primary Key)
+- email (Unique)
+- password_hash
+- first_name
+- last_name
+- created_at
 
-- `users` table
-- `messages` table
-- Foreign key constraints for referential integrity
-- `ON DELETE CASCADE` behavior
-- Indexes for optimized message lookups
+### messages
+- id (Primary Key)
+- sender_user_id (Foreign Key → users.id)
+- receiver_user_id (Foreign Key → users.id)
+- message
+- created_at
 
-### SQL Files Included
+Foreign key constraints enforce referential integrity.
 
-- `sql/schema.sql` — Clean schema definition
-- `sql/dump.sql` — Full MySQL dump for review
+`ON DELETE CASCADE` ensures related messages are removed when a user is deleted.
 
-The database dump was generated using:
+Indexes optimize message history queries.
+
+---
+
+## SQL Files Included
+
+- `sql/schema.sql` — clean schema definition
+- `sql/dump.sql` — full MySQL dump for schema review
+
+The dump was generated using:
 
 ```bash
 mysqldump -u root -p giftogram_chat > sql/dump.sql
 ```
 
-While committing database dumps is not recommended for production systems, it is included here to satisfy the technical assessment requirement and allow reviewers to inspect the schema design.
+Note: Including database dumps is not recommended in production systems but is included here to satisfy the assessment requirement.
 
 ---
 
 ## Development Timeline (Commit Summary)
 
-The project is being built incrementally.
-
 ### Commit #1 — Project Initialization
 
 - Initialized Node.js project
 - Installed Express
-- Created initial folder structure
+- Created project structure
 - Added `.gitignore` and `.env.example`
-- Created basic Express server
-- Added health check endpoint
+- Implemented base Express server
+- Added `/health` endpoint
+
+---
 
 ### Commit #2 — Database Integration
 
 - Installed and configured MySQL locally
-- Designed relational schema for users and messages
+- Designed relational schema (users, messages)
 - Implemented foreign key constraints
 - Added cascading delete behavior
 - Added performance indexes
-- Integrated MySQL connection pooling with `mysql2`
-- Added environment-based configuration
-- Updated `/health` endpoint to verify database connectivity
+- Integrated MySQL connection pooling (mysql2)
+- Configured environment-based database settings
+- Updated `/health` to verify database connectivity
 - Added SQL dump file for schema review
 
-Future commits will implement:
+---
 
-- Authentication endpoints
-- Messaging endpoints
-- Structured error handling
-- Validation logic
+### Commit #3 — Register Endpoint Implementation
+
+- Implemented `POST /register`
+- Added input validation
+- Added duplicate email detection
+- Integrated bcrypt password hashing
+- Added standardized error response helper
+- Structured code into routes and utility modules
 
 ---
 
 ## Suggested Improvements
 
-While the assignment focuses on functional requirements, the following enhancements improve production readiness.
+While the assignment focuses on functional requirements, the following improvements increase production readiness.
 
 ### Security
 
-**Password Hashing (To Be Implemented)**  
-The assignment does not explicitly require password hashing. However, storing plain-text passwords would not be secure in real-world systems. This implementation will use bcrypt to hash passwords before storage as a baseline security improvement.
+**Password Hashing (Implemented)**  
+The assignment does not explicitly require password hashing. However, storing plain-text passwords is not secure in real-world systems.  
+This implementation uses `bcrypt` to securely hash passwords before storing them.
 
-- Implement JWT-based authentication instead of relying on user IDs passed in requests
-- Add login rate limiting to prevent brute-force attacks
-- Enforce HTTPS in production environments
+Additional improvements:
+- Implement JWT-based authentication
+- Add login rate limiting
+- Enforce HTTPS in production
 - Add stricter input validation and sanitization
 
 ### Usability
 
 - Add pagination for message history endpoints
-- Return additional metadata such as ISO 8601 timestamps
+- Return ISO 8601 timestamps consistently
 - Improve error message consistency
-- Align HTTP status codes more strictly with REST standards
+- Align HTTP status codes with REST standards
 
 ### API Design
 
-Refactor action-based endpoints into resource-based routes:
+Refactor toward resource-based routes:
 
 - `POST /users`
 - `POST /sessions`
@@ -199,20 +233,15 @@ Refactor action-based endpoints into resource-based routes:
 - `GET /messages`
 
 Additional improvements:
-
-- Add API versioning (e.g., `/v1/...`)
-- Introduce consistent response envelopes for success responses
+- Add API versioning (`/v1/...`)
+- Introduce consistent success response envelopes
 
 ---
 
 ## Architectural Notes
 
-- Relational integrity is enforced using foreign key constraints
-- Cascading deletes ensure associated messages are cleaned automatically
-- Database queries use connection pooling for efficiency
-- Environment variables isolate configuration from code
-- Development follows small, traceable commits for clarity and reviewability
-
----
-
-This repository demonstrates backend API design, relational modeling, incremental development, and attention to production-level considerations aligned with the provided technical assessment requirements.
+- Relational integrity enforced via foreign keys
+- Cascading deletes prevent orphaned messages
+- Connection pooling improves database efficiency
+- Environment variables isolate configuration
+- Development performed in small, reviewable commits

@@ -3,9 +3,13 @@ require("dotenv").config();
 
 const express = require("express");
 const { pool } = require("./db");
+const authRoutes = require("./routes/auth");
 
 const app = express();
 app.use(express.json());
+
+// routes
+app.use("/", authRoutes);
 
 app.get("/health", async (req, res) => {
   try {
