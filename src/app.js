@@ -4,12 +4,14 @@ require("dotenv").config();
 const express = require("express");
 const { pool } = require("./db");
 const authRoutes = require("./routes/auth");
+const messageRoutes = require("./routes/messages");
 
 const app = express();
 app.use(express.json());
 
 // routes
 app.use("/", authRoutes);
+app.use("/", messageRoutes);
 
 app.get("/health", async (req, res) => {
   try {

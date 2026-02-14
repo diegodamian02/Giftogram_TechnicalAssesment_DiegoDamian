@@ -14,21 +14,19 @@ CREATE TABLE IF NOT EXISTS users (
 
 
 -- Messages
- CREATE TABLE IF NOT EXISTS messages (
+CREATE TABLE IF NOT EXISTS messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     sender_user_id INT NOT NULL,
     receiver_user_id INT NOT NULL,
     message TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_messages_sender
-    FOREIGN KEY (sender_user_id) REFERENCES users(id)
-    ON DELETE CASCADE
-
+        FOREIGN KEY (sender_user_id) REFERENCES users(id)
+        ON DELETE CASCADE,
     CONSTRAINT fk_messages_receiver
-    FOREIGN KEY (receiver_user_id) REFERENCES users(id)
-    ON DELETE CASCADE
- );
+        FOREIGN KEY (receiver_user_id) REFERENCES users(id)
+        ON DELETE CASCADE
+);
  
 -- helpful indexes
 CREATE INDEX idx_messages_sender_received
