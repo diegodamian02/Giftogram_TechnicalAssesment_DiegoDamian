@@ -122,6 +122,65 @@ router.post("/login", async (req, res) => {
     }
 });
 
+/**
+ * GET /list_all_users
+ * Query param: requeste_user_id
+ */
+
+router.get("/list_all_users", async (req, res) => {
+    try {
+        const { requester_user_id } = req.query;
+
+        if(!requester_user_id) {
+            return sendError(res, {
+                status: 400,
+                code: 100,
+                title: "Validation Error",
+                message: "requester_user_id is requiered.",
+            });
+        }
+
+        const requesterID = Number(requester_user_id);
+
+        if(!Number.isInteger(requesterID)) {
+            return sendError(res, {
+                status: 400,
+                code: 100,
+                title: "Validation Error",
+                message: "requester_user_id is required."
+            });
+        }
+
+        const [rows] = await pool.query(
+
+            `
+            SELECT
+                id AS user_id,
+                email,
+                first_name,
+                last_name
+                FROM users
+                WHERE id != ?
+                ORDER BY id ASC
+           
+            `,
+            [requesterID]
+        );
+
+        return res.status(200).json({ users: rows})
+
+    } catch(err) {
+        console.error("list_all_users error:". err);
+
+        return sendError(res, {
+            status: 500,
+            code: 500, 
+            title: "Server Error",
+            message: "An unexpected error occurred."
+        });
+    }
+});
+
 
 
 module.exports = router;
