@@ -10,7 +10,7 @@
 
 - Friday, February 13, 2026: 10:00 PM to Saturday, February 14, 2026 1:00 AM (3.0 hours)
 - Saturday, February 14, 2026: 5:30 PM to 6:30 PM (1.0 hour)
-- Sunday, February 15, 2026: 12:30 PM to 2:00 PM (approx. 1.5 hours, end time may change)
+- Sunday, February 15, 2026: 12:30 PM to 2:00 PM (1.5 hours)
 
 ---
 
@@ -157,7 +157,8 @@ cd giftogram-chat-api
 ### 2. Install Dependencies
 
 ```bash
-npm install
+npm install express mysql2 dotenv
+npm install --save-dev nodemon
 ```
 
 Installs:
@@ -170,7 +171,7 @@ Installs:
 Create a `.env` file from the example template:
 
 ```bash
-cp .env.example .env
+cp .env
 ```
 
 Update database credentials:
@@ -187,6 +188,7 @@ DB_PORT=3306
 ### 4. Create Database and Tables
 
 ```bash
+# this resets the database every run (drops existing users/messages)
 mysql -u root -p < sql/schema.sql
 mysql -u root -p giftogram_chat < sql/demo.sql
 ```
@@ -249,7 +251,7 @@ curl -i -X POST http://localhost:3000/register \
 # login success (user 1 - Diego)
 curl -i -X POST http://localhost:3000/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"diego@giftogram.com","password":"<DIEGO_PASSWORD>"}'
+  -d '{"email":"diego@giftogram.com","password":"diego123"}'
 
 # login failure
 curl -i -X POST http://localhost:3000/login \
@@ -393,17 +395,14 @@ The assignment does not explicitly require password hashing. However, storing pl
 This implementation uses `bcrypt` to securely hash passwords before storing them.
 
 Additional improvements:
-- Implement JWT-based authentication
-- Add login rate limiting
 - Enforce HTTPS in production
 - Add stricter input validation and sanitization
 
 ### Usability
 
 - Add pagination for message history endpoints
-- Return ISO 8601 timestamps consistently
 - Improve error message consistency
-- Align HTTP status codes with REST standards
+- Show timestamps and being able to delete or archive messages
 
 ### API Design
 

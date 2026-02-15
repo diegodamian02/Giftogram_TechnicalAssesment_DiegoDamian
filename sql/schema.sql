@@ -1,5 +1,6 @@
--- Create DB (safe to run multiple times)
-CREATE DATABASE IF NOT EXISTS giftogram_chat;
+-- Reset DB for a fresh demo run each time
+DROP DATABASE IF EXISTS giftogram_chat;
+CREATE DATABASE giftogram_chat;
 USE giftogram_chat;
 
 -- Users
