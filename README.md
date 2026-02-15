@@ -150,7 +150,7 @@ Response:
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/diegodamian02/Giftogram_TechnicalAssesment_DiegoDamian.git
 cd giftogram-chat-api
 ```
 
