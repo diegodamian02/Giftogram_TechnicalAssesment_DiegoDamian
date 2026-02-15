@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * GET /view_messages
- * Query params: user_id_sender, user_id_receiver
+ * Query params: user_id_a, user_id_b
  * Response:
  * "messages:": [
  *      {"message_id": 1, "sender_user_id": 1, "message": "Hey", "epoch": 89542892389 }
@@ -15,19 +15,21 @@ const router = express.Router();
 
 router.get("/view_messages", async (req, res) => {
     try {
-        const { user_id_sender, user_id_receiver } = req.query;
+        const { user_id_a, user_id_b, user_id_sender, user_id_receiver } = req.query;
+        const left = user_id_a ?? user_id_sender;
+        const right = user_id_b ?? user_id_receiver;
 
-        if(!user_id_sender || !user_id_receiver) {
+        if(!left || !right) {
             return sendError(res, {
-                stauts: 400,
+                status: 400,
                 code: 100,
                 title: "Validation Error",
-                message: "sender_id and receiver_id are required",
+                message: "user_id_a and user_id_b are required",
             });
         }
 
-        const a = Number(user_id_sender);
-        const b = Number(user_id_receiver);
+        const a = Number(left);
+        const b = Number(right);
 
         if(!Number.isInteger(a) || !Number.isInteger(b)) {
             return sendError(res, {
@@ -54,7 +56,7 @@ router.get("/view_messages", async (req, res) => {
             [a, b, b, a]
         );
 
-        return res.status(200).json({ message: rows });
+        return res.status(200).json({ messages: rows });
     } catch(err) {
         console.error("view_messages error:", err);
         return sendError(res, {
@@ -110,6 +112,21 @@ router.post("/send_message", async (req, res) => {
             message: "sender_user_id and receiver_user_id must be different.",
         });
     
+        }
+
+        const [users] = await pool.query(
+            "SELECT id FROM users WHERE id IN (?, ?)",
+            [sender, receiver]
+        );
+
+        const userIds = new Set(users.map((u) => u.id));
+        if (!userIds.has(sender) || !userIds.has(receiver)) {
+            return sendError(res, {
+                status: 404,
+                code: 104,
+                title: "User Not Found",
+                message: "sender_user_id or receiver_user_id does not exist.",
+            });
         }
 
         await pool.query(

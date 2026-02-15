@@ -1,8 +1,6 @@
 const express = require("express");
-const bcrypt = require("bcryptjs");
 const { pool } = require("../db")
 const { sendError } = require("../utils/errors");
-const send = require("send");
 const router = express.Router();
 
 /**
@@ -40,13 +38,13 @@ router.post("/register", async (req, res) => {
         }
 
         // hash password - optional implementation
-        const password_hash = await bcrypt.hash(password, 10);
+        //const password_hash = await bcrypt.hash(password, 10);
 
         //Insert user
         const [result] = await pool.query(
-           ` INSERT INTO users (email, password_hash, first_name, last_name)
+           ` INSERT INTO users (email, password, first_name, last_name)
            VAlues (?, ?, ?, ?)`,
-           [email, password_hash, first_name, last_name]
+           [email, password, first_name, last_name]
         );
 
         return res.status(201).json({
@@ -85,7 +83,7 @@ router.post("/login", async (req, res) => {
             });
         }
         const [rows] = await pool.query(
-            "SELECT id, password_hash FROM users WHERE email = ? LIMIT 1",
+            "SELECT id, password FROM users WHERE email = ? LIMIT 1",
             [email]
         );
 
@@ -99,8 +97,7 @@ router.post("/login", async (req, res) => {
         }
 
         const user = rows[0];
-        const ok = await bcrypt.compare(password, user.password_hash);
-
+        const ok = password === rows[0].password;
         if(!ok) {
             return sendError(res, {
                 status: 401, 
@@ -110,7 +107,7 @@ router.post("/login", async (req, res) => {
             });
         }
 
-        return res.status(200).json({ user_id: user.user_id});
+        return res.status(200).json({ user_id: user.id});
     } catch(err) {
         console.error("Login error:", err);
         return sendError(res, {
